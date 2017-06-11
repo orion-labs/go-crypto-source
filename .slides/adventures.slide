@@ -175,3 +175,34 @@ In that same vein, `Int63` is pretty easy too. Just gotta shave off one bit!
 
 Each of these sequences will be different on EVERY run!
 .code adventures_test.go /START MYOUTPUT/,/END MYOUTPUT/
+
+* How does it compare?
+
+Let's try some benchmarking
+.code adventures_test.go /START BENCHa/,/END BENCHa/
+
+Results - 40x SLOWER?!?
+.code adventures_test.go /START BENCHOUTa/,/END BENCHOUTa/
+
+* But why?
+Is it something about `crypto/rand` itself?
+.code adventures_test.go /START BENCHb/,/END BENCHb/
+
+Results - `crypto/rand` is a bunch slower, in comparison
+.code adventures_test.go /START BENCHOUTb/,/END BENCHOUTb/
+
+* Summary
+
+We _can_ use `math/rand` as the API for `crypto/rand`
+- Interfaces are _AWESOME_
+
+Non-deterministic random is a tradeoff
+- Know your use case!
+- This technique may not be appropriate for you if your use of random is on the hot path.
+
+* Thank You!
+
+Available at [[https://github.com/onbeep/go-crypto-source/]]:
+- Slides
+- Source code
+- A more polished API

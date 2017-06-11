@@ -10,6 +10,9 @@ import (
 	"time"
 )
 
+var prime1000 = 7919
+var result int
+
 func TestExample01(t *testing.T) {
 	// START EXAMPLE01 OMIT
 	seed := int64(7)
@@ -137,5 +140,48 @@ func TestExampleMySource(t *testing.T) {
 		10 != 49
 		END MYOUTPUT OMIT
 	*/
-
 }
+
+// START BENCHa OMIT
+
+func BenchmarkNative(b *testing.B) {
+	random := mrand.New(mrand.NewSource(time.Now().UnixNano()))
+	for n := 0; n < b.N; n++ {
+		result = random.Intn(prime1000)
+	}
+}
+
+func BenchmarkMySource(b *testing.B) {
+	random := mrand.New(&MySource{})
+	for n := 0; n < b.N; n++ {
+		result = random.Intn(prime1000)
+	}
+}
+
+// END BENCHa OMIT
+
+/*
+START BENCHOUTa OMIT
+BenchmarkNative-4     	50000000	        23.8 ns/op
+BenchmarkMySource-4   	 2000000	       873 ns/op
+END BENCHOUTa OMIT
+*/
+
+// START BENCHb OMIT
+
+func BenchmarkCryptoRead(b *testing.B) {
+	buffer := make([]byte, 8)
+	for n := 0; n < b.N; n++ {
+		result, _ = crand.Read(buffer)
+	}
+}
+
+// END BENCHb OMIT
+
+/*
+START BENCHOUTb OMIT
+BenchmarkNative-4       	100000000	        23.9 ns/op
+BenchmarkCryptoRead-4   	 2000000	       815 ns/op
+BenchmarkMySource-4     	 2000000	       897 ns/op
+END BENCHOUTb OMIT
+*/
