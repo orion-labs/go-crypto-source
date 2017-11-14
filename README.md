@@ -25,7 +25,7 @@ On a developer workstation, it takes nearly a full millisecond to read 8 bytes f
 
 # Copyright
 ```
-Copyright 2017 Orion Labs, Inc
+Copyright 2017 Orion Labs, Inc. - https://www.orionlabs.io
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
