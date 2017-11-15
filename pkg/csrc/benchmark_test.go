@@ -52,15 +52,8 @@ func BenchmarkCryptoRead(b *testing.B) {
 	}
 }
 
-func BenchmarkCryptoUnsafe(b *testing.B) {
-	random := NewRandom(false)
-	for n := 0; n < b.N; n++ {
-		result = random.Intn(prime1000)
-	}
-}
-
-func BenchmarkCryptoSafe(b *testing.B) {
-	random := NewRandom(true)
+func BenchmarkCrypto(b *testing.B) {
+	random := NewRandom()
 	for n := 0; n < b.N; n++ {
 		result = random.Intn(prime1000)
 	}
