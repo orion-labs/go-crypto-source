@@ -21,6 +21,12 @@ import (
 	"sync"
 )
 
+const mask uint64 = ^uint64(1 << 63)
+
+func to63(in uint64) int64 {
+	return int64(in & mask)
+}
+
 type cryptSrc struct {
 	sync.Mutex
 	safe bool
@@ -29,16 +35,6 @@ type cryptSrc struct {
 
 func (s *cryptSrc) Seed(seed int64) { /*no-op*/ }
 
-func (s *cryptSrc) Int63() int64 {
-	if s.safe {
-		s.Lock()
-		defer s.Unlock()
-	}
-	crand.Read(s.buf)
-	s.buf[0] &= 0x7f
-	return int64(binary.BigEndian.Uint64(s.buf))
-}
-
 func (s *cryptSrc) Uint64() uint64 {
 	if s.safe {
 		s.Lock()
@@ -46,6 +42,10 @@ func (s *cryptSrc) Uint64() uint64 {
 	}
 	crand.Read(s.buf)
 	return binary.BigEndian.Uint64(s.buf)
+}
+
+func (s *cryptSrc) Int63() int64 {
+	return to63(s.Uint64())
 }
 
 // NewSource builds struct that conforms to the `math/rand` `Source64` interface,
@@ -60,4 +60,25 @@ func NewSource(threadsafe bool) mrand.Source64 {
 // `math/rand` `*Rand` struct that is directly ready for use.
 func NewRandom(threadsafe bool) *mrand.Rand {
 	return mrand.New(NewSource(threadsafe))
+}
+
+type simpleSrc struct{}
+
+func (s *simpleSrc) Seed(seed int64) { /*no-op*/ }
+
+func (s *simpleSrc) Uint64() (value uint64) {
+	binary.Read(crand.Reader, binary.BigEndian, &value)
+	return value
+}
+
+func (s *simpleSrc) Int63() int64 {
+	return to63(s.Uint64())
+}
+
+func NewSimpleSource() mrand.Source64 {
+	return &simpleSrc{}
+}
+
+func NewSimpleRand() *mrand.Rand {
+	return mrand.New(NewSimpleSource())
 }

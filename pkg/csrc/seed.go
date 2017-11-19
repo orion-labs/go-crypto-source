@@ -25,9 +25,9 @@ import (
 // a deterministic sequence based on the seed, it's just that the seed is
 // obfuscated
 func NewCryptoSeededSource() mrand.Source {
-	b := make([]byte, 8)
-	crand.Reader.Read(b)
-	return mrand.NewSource(int64(binary.BigEndian.Uint64(b)))
+	var value int64
+	binary.Read(crand.Reader, binary.BigEndian, &value)
+	return mrand.NewSource(value)
 }
 
 // NewCryptoSeededRandom is a convenience builder around `NewCryptoSeededSource()`
