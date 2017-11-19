@@ -24,8 +24,8 @@ var primes = []int{
 }
 
 func TestRandomSource(t *testing.T) {
-	alpha := NewRandom()
-	omega := NewRandom()
+	alpha := NewRandom(false)
+	omega := NewRandom(true)
 
 	for _, prime := range primes {
 		a := alpha.Intn(prime)

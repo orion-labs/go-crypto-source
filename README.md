@@ -11,11 +11,6 @@ $ cd $REPO_ROOT/.slides/ && present .
 ```
 
 ## Bechmarks
-To run them:
-```
-go test -bench=. ./...
-```
-
 The benchmarks that are output from the `benchmark_test.go` are illuminating:
 ```
 BenchmarkGlobal-4         	50000000	        37.7 ns/op

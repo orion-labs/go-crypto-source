@@ -18,29 +18,46 @@ import (
 	crand "crypto/rand"
 	"encoding/binary"
 	mrand "math/rand"
+	"sync"
 )
 
-type cryptSrc struct{}
+type cryptSrc struct {
+	sync.Mutex
+	safe bool
+	buf  []byte
+}
 
 func (s *cryptSrc) Seed(seed int64) { /*no-op*/ }
 
 func (s *cryptSrc) Int63() int64 {
-	return int64(s.Uint64() & ^uint64(1<<63))
+	if s.safe {
+		s.Lock()
+		defer s.Unlock()
+	}
+	crand.Read(s.buf)
+	s.buf[0] &= 0x7f
+	return int64(binary.BigEndian.Uint64(s.buf))
 }
 
-func (s *cryptSrc) Uint64() (value uint64) {
-	binary.Read(crand.Reader, binary.BigEndian, &value)
-	return value
+func (s *cryptSrc) Uint64() uint64 {
+	if s.safe {
+		s.Lock()
+		defer s.Unlock()
+	}
+	crand.Read(s.buf)
+	return binary.BigEndian.Uint64(s.buf)
 }
 
 // NewSource builds struct that conforms to the `math/rand` `Source64` interface,
 // and provides a non-deterministic random numbers as provided by `crypto/rand`.
-func NewSource() mrand.Source64 {
-	return &cryptSrc{}
+// This is set up to have minimal allocations by sharing a single buffer, so
+// you are required to specify whether or not you want thread safety.
+func NewSource(threadsafe bool) mrand.Source64 {
+	return &cryptSrc{safe: threadsafe, buf: make([]byte, 8)}
 }
 
 // NewRandom is a convenience builder around `NewSource(...)` that returns a
 // `math/rand` `*Rand` struct that is directly ready for use.
-func NewRandom() *mrand.Rand {
-	return mrand.New(NewSource())
+func NewRandom(threadsafe bool) *mrand.Rand {
+	return mrand.New(NewSource(threadsafe))
 }
