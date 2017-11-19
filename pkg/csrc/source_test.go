@@ -46,3 +46,27 @@ func TestRandomSource(t *testing.T) {
 		}
 	}
 }
+
+func TestSimpleSource(t *testing.T) {
+	alpha := NewSimpleRandom()
+	omega := NewSimpleRandom()
+
+	for _, prime := range primes {
+		a := alpha.Intn(prime)
+		o := omega.Intn(prime)
+
+		// Yes these could end up being equal, but it will
+		// only happen very infrequently.
+		// https://en.wikipedia.org/wiki/Birthday_problem
+		if a == o {
+			t.Errorf("unexpected %d == %d", a, o)
+		}
+
+		// Even SMALLER chance of collision
+		a64 := alpha.Uint64()
+		o64 := omega.Uint64()
+		if a64 == o64 {
+			t.Errorf("unexpected %d == %d", a64, o64)
+		}
+	}
+}

@@ -65,3 +65,10 @@ func BenchmarkCryptoSafe(b *testing.B) {
 		result = random.Intn(prime1000)
 	}
 }
+
+func BenchmarkCryptoSimple(b *testing.B) {
+	random := NewSimpleRandom()
+	for n := 0; n < b.N; n++ {
+		result = random.Intn(prime1000)
+	}
+}
