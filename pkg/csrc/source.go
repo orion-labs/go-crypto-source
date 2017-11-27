@@ -17,7 +17,7 @@ package csrc
 import (
 	crand "crypto/rand"
 	"encoding/binary"
-	mrand "math/rand"
+	"math/rand"
 	"sync"
 )
 
@@ -48,18 +48,18 @@ func (s *cryptSrc) Int63() int64 {
 	return to63(s.Uint64())
 }
 
-// NewSource builds a struct that conforms to the `math/rand` `Source64` interface,
-// and provides a non-deterministic random numbers as provided by `crypto/rand`.
+// NewSource builds a struct that conforms to the "math/rand" Source64 interface,
+// and provides a non-deterministic random numbers as provided by "crypto/rand".
 // This is set up to have minimal allocations by sharing a single buffer, so
 // you are required to specify whether or not you want thread safety.
-func NewSource(threadsafe bool) mrand.Source64 {
+func NewSource(threadsafe bool) rand.Source64 {
 	return &cryptSrc{safe: threadsafe, buf: make([]byte, 8)}
 }
 
-// NewRandom is a convenience builder around `NewSource(...)` that returns a
-// `math/rand` `*Rand` struct that is directly ready for use.
-func NewRandom(threadsafe bool) *mrand.Rand {
-	return mrand.New(NewSource(threadsafe))
+// NewRandom is a convenience builder around NewSource(...) that returns a
+// pointer to a "math/rand" Rand instance that is directly ready for use.
+func NewRandom(threadsafe bool) *rand.Rand {
+	return rand.New(NewSource(threadsafe))
 }
 
 type simpleSrc struct{}
@@ -75,26 +75,26 @@ func (s *simpleSrc) Int63() int64 {
 	return to63(s.Uint64())
 }
 
-// NewSimpleSource builds a struct that conforms to the `math/rand` `Source64`
+// NewSimpleSource builds a struct that conforms to the "math/rand" Source64
 // interface, and provides a non-deterministic random numbers as provided by
-// `crypto/rand`.
+// "crypto/rand".
 //
-// Calling out to the `crypto/rand` package is demonstrably slower than
-// using the deterministically generated numbers from the `math/rand` package,
+// Calling out to the "crypto/rand" package is demonstrably slower than
+// using the deterministically generated numbers from the "math/rand" package,
 // so if performance is your intention, reconsider using this.
 //
-// If you only
-// need a truly random seed for instantiating a `math/rand` `*Rand`, then
-// see `NewCryptoSeededSource()` or `NewCryptoSeededRandom()`
+// If you only need a truly random seed for instantiating a "math/rand" Rand,
+// then see NewCryptoSeededSource() or NewCryptoSeededRandom()
 //
 // If you are trying to reduce memory allocations (but are okay with paying the
-// `crypto/rand` tax), see `NewSource(...)` or `NewRandom(...)`.
-func NewSimpleSource() mrand.Source64 {
+// "crypto/rand" speed hit), see NewSource(...) or NewRandom(...).
+func NewSimpleSource() rand.Source64 {
 	return &simpleSrc{}
 }
 
-// NewSimpleRandom is a convenience builder around `NewSimpleSource()` that
-// returns a `math/rand` `*Rand` struct that is directly ready for use.
-func NewSimpleRandom() *mrand.Rand {
-	return mrand.New(NewSimpleSource())
+// NewSimpleRandom is a convenience builder around NewSimpleSource() that
+// returns a pointer to a "math/rand" Rand instance that is directly ready
+// for use.
+func NewSimpleRandom() *rand.Rand {
+	return rand.New(NewSimpleSource())
 }

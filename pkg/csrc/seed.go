@@ -17,21 +17,21 @@ package csrc
 import (
 	crand "crypto/rand"
 	"encoding/binary"
-	mrand "math/rand"
+	"math/rand"
 )
 
-// NewCryptoSeededSource builds a `math/rand` `Source` that uses `crypto/rand`
-// to generate a non-deterministic seed. Note: this `Source` still outputs
+// NewCryptoSeededSource builds a "math/rand" Source that uses "crypto/rand"
+// to generate a non-deterministic seed. Note: this Source still outputs
 // a deterministic sequence based on the seed, it's just that the seed is
-// obfuscated
-func NewCryptoSeededSource() mrand.Source {
+// obfuscated.
+func NewCryptoSeededSource() rand.Source {
 	var value int64
 	binary.Read(crand.Reader, binary.BigEndian, &value)
-	return mrand.NewSource(value)
+	return rand.NewSource(value)
 }
 
-// NewCryptoSeededRandom is a convenience builder around `NewCryptoSeededSource()`
-// that returns a `math/rand` `*Rand` that is ready to use.
-func NewCryptoSeededRandom() *mrand.Rand {
-	return mrand.New(NewCryptoSeededSource())
+// NewCryptoSeededRandom is a convenience builder around NewCryptoSeededSource()
+// that returns a pointer to a "math/rand" Rand that is ready to use.
+func NewCryptoSeededRandom() *rand.Rand {
+	return rand.New(NewCryptoSeededSource())
 }
