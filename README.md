@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/orion-labs/go-crypto-source?status.svg)](https://godoc.org/github.com/orion-labs/go-crypto-source/pkg/csrc) [![Go Report Card](https://goreportcard.com/badge/github.com/orion-labs/go-crypto-source)](https://goreportcard.com/report/github.com/orion-labs/go-crypto-source)
+
 # go-crypto-source
 Options for using `crypto/rand` to back a `math/rand.Rand`
 
